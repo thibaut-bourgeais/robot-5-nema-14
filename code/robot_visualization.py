@@ -1,73 +1,89 @@
-import pybullet as p
-import pybullet_data
-import time
 import numpy as np
-from robot_state import update_robot_state
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import sys
+from PyQt5 import QtWidgets, uic
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
-class Robot3DSimulator:
+class RobotWindow(QtWidgets.QDialog):
     def __init__(self):
-        # Initialisation de PyBullet
-        self.physicsClient = p.connect(p.GUI)
-        p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        p.setGravity(0, 0, -9.81)
+        super().__init__()
+        uic.loadUi("code\GUI.ui", self)
 
-        # Chargement du plan de référence
-        self.planeId = p.loadURDF("plane.urdf")
+        # Create the fig and canvas
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
 
-        # Chargement du robot KUKA 6 axes
-        self.robotId = p.loadURDF("kuka_iiwa/model.urdf", basePosition=[0, 0, 0])
+        # Dynamic layout in the RobotPlot widget
+        self.robot_plot_layout = QtWidgets.QVBoxLayout(self.RobotPlot)
+        self.robot_plot_layout.setContentsMargins(0, 0, 0, 0)
+        self.robot_plot_layout.addWidget(self.canvas)
 
-        # Nombre de joints du robot
-        self.num_joints = p.getNumJoints(self.robotId)
+        # Plot exemples
+        self.plot_example()
 
-        # Définition des limites articulaires (exemple)
-        self.joint_limits = [(-np.pi, np.pi)] * self.num_joints
+    def plot_example(self):
+        self.figure.clf()  # Clear figure to avoid overlapping plots
+        ax = self.figure.add_subplot(111, projection='3d')  # 3D plot
 
-    def set_joint_positions(self, angles):
-        """
-        Met à jour les angles des joints du robot dans la simulation.
-        """
-        for i, angle in enumerate(angles):
-            clamped_angle = np.clip(angle, self.joint_limits[i][0], self.joint_limits[i][1])
-            p.setJointMotorControl2(self.robotId, i, p.POSITION_CONTROL, targetPosition=clamped_angle)
-            print(f"Joint {i}: targetPosition = {clamped_angle:.2f}")  # Debug
+        # Example 3D line
+        xs = [0, 1, 2, 3]
+        ys = [10, 1, 20, 3]
+        zs = [30, 40, 50, 60]
+        ax.plot(xs, ys, zs)
 
-    def generate_random_target(self):
-        """
-        Génère une position aléatoire en coordonnées sphériques :
-        - Distance r entre 5 et 15
-        - Angle theta entre 0 et 2π
-        - Angle phi entre 0 et π/2 (pour rester au-dessus du plan)
-        """
-        r = np.random.uniform(5, 15)
-        theta = np.random.uniform(0, 2 * np.pi)
-        phi = np.random.uniform(0, np.pi / 2)
-        print(f"Nouvelle position cible: r={r:.2f}, theta={theta:.2f}, phi={phi:.2f}")  # Debug
-        return (r, theta, phi)
+        ax.set_xlabel("X axis")
+        ax.set_ylabel("Y axis")
+        ax.set_zlabel("Z axis")
+        self.canvas.draw()
 
-    def update(self):
-        """
-        Génère une position aléatoire et met à jour la simulation.
-        """
-        target_coords = self.generate_random_target()
-        angles = update_robot_state(target_coords)
-
-        # Vérification des angles obtenus
-        print("Angles calculés :", angles)
-
-        self.set_joint_positions(angles)
-
-    def run(self):
-        """
-        Boucle principale d'animation.
-        Génère une nouvelle position toutes les 2 secondes.
-        """
-        while True:
-            self.update()
-            for _ in range(40):  # Attendre 2 secondes en simulant 40 steps (50ms chaque)
-                p.stepSimulation()
-                time.sleep(0.05)
 
 if __name__ == "__main__":
-    simulator = Robot3DSimulator()
-    simulator.run()
+    app = QtWidgets.QApplication(sys.argv)
+    window = RobotWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+
+class vector:
+    def __init__(self, x1, y1, z1, x2, y2, z2):
+        """
+        Initializes a vector from two points (x1, y1, z1) and (x2, y2, z2).
+        """
+        self.x1 = x1
+        self.y1 = y1
+        self.z1 = z1
+        self.x2 = x2
+        self.y2 = y2
+        self.z2 = z2
+    
+    def norm(self):
+        """
+        Returns the norm (length) of the vector.
+        """
+        return np.sqrt((self.x2 - self.x1)**2 + (self.y2 - self.y1)**2 + (self.z2 - self.z1)**2)
+    
+    def origin(self):
+        """
+        Returns the origin coordinates of the vector as a tuple (x1, y1, z1)
+        """
+        return (self.x1, self.y1, self.z1)
+    
+    def destination(self):
+        """
+        Returns the destination coordinates of the vector as a tuple (x2, y2, z2)
+        """
+        return (self.x2, self.y2, self.z2)
+    
+    def direction(self):
+        """
+        Returns the direction of the vector as a tuple (dx, dy, dz)
+        """
+        dx = self.x2 - self.x1
+        dy = self.y2 - self.y1
+        dz = self.z2 - self.z1
+        return (dx, dy, dz)
+
+    def __str__(self):
+        return f"Vector: {self.x1}, {self.y1}, {self.z1} -> {self.x2}, {self.y2}, {self.z2}"
