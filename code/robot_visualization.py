@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -19,23 +20,34 @@ class RobotWindow(QtWidgets.QDialog):
         self.robot_plot_layout = QtWidgets.QVBoxLayout(self.RobotPlot)
         self.robot_plot_layout.setContentsMargins(0, 0, 0, 0)
         self.robot_plot_layout.addWidget(self.canvas)
+        
+        # Timer for live plot
+        self.t = 0  # time step
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(50)  # update every 50 ms
 
         # Plot exemples
-        self.plot_example()
+        self.update_plot()
+        
+    def update_plot(self):
+        self.figure.clf()
+        ax = self.figure.add_subplot(111, projection='3d')
 
-    def plot_example(self):
-        self.figure.clf()  # Clear figure to avoid overlapping plots
-        ax = self.figure.add_subplot(111, projection='3d')  # 3D plot
+        # Spirale hélicoïdale
+        self.t += 0.1
+        theta = np.linspace(0, self.t, 100)
+        x = np.cos(theta)
+        y = np.sin(theta)
+        z = theta
 
-        # Example 3D line
-        xs = [0, 1, 2, 3]
-        ys = [10, 1, 20, 3]
-        zs = [30, 40, 50, 60]
-        ax.plot(xs, ys, zs)
-
-        ax.set_xlabel("X axis")
-        ax.set_ylabel("Y axis")
-        ax.set_zlabel("Z axis")
+        ax.plot(x, y, z, color='b')
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(-1, 1)
+        ax.set_zlim(0, 10)
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
         self.canvas.draw()
 
 
