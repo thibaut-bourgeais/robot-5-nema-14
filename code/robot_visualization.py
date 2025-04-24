@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 class RobotWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi("code\GUI.ui", self)
+        uic.loadUi("code/GUI.ui", self)
 
         # Create the fig and canvas
         self.figure = Figure()
