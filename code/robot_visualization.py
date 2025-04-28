@@ -7,6 +7,8 @@ from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+from kinematics import RobotArm 
+
 class RobotWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -21,34 +23,51 @@ class RobotWindow(QtWidgets.QDialog):
         self.robot_plot_layout.setContentsMargins(0, 0, 0, 0)
         self.robot_plot_layout.addWidget(self.canvas)
         
+        self.arm = RobotArm()
+        self.start_angles = self.arm.get_angles()
+        self.target_angles = self.arm.solve_inverse_kinematic_position((7, 2, 5))
+
+        self.steps_total = 100  # For 5s at 50ms/tick
+        self.current_step = 0
+        
         # Timer for live plot
-        self.t = 0  # time step
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(50)  # update every 50 ms
 
-        # Plot exemples
         self.update_plot()
         
+    def interpolate_angles(self, alpha):
+        """Interpolation linéaire entre angles de départ et cible."""
+        return [
+            (1 - alpha) * a + alpha * b
+            for a, b in zip(self.start_angles, self.target_angles)
+        ]
+
     def update_plot(self):
         self.figure.clf()
         ax = self.figure.add_subplot(111, projection='3d')
 
-        # Spirale hélicoïdale
-        self.t += 0.1
-        theta = np.linspace(0, self.t, 100)
-        x = np.cos(theta)
-        y = np.sin(theta)
-        z = theta
+        # Interpolation sur angles
+        alpha = min(1.0, self.current_step / self.steps_total)
+        interpolated = self.interpolate_angles(alpha)
+        self.arm.set_angles(interpolated)
+        positions = self.arm.get_joint_positions()
 
-        ax.plot(x, y, z, color='b')
-        ax.set_xlim(-1, 1)
-        ax.set_ylim(-1, 1)
+        # Tracé des segments
+        xs, ys, zs = zip(*positions)
+        ax.plot(xs, ys, zs, marker='o', color='darkorange')
+
+        # Axes fixes pour la visualisation
+        ax.set_xlim(-10, 10)
+        ax.set_ylim(-10, 10)
         ax.set_zlim(0, 10)
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
         ax.set_zlabel("Z")
+
         self.canvas.draw()
+        self.current_step += 1
 
 
 if __name__ == "__main__":
