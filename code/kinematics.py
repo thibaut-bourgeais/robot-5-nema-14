@@ -40,10 +40,10 @@ class RobotArm:
     def __init__(self):
         # Hardcoded joints for now
         self.joints = [
-            Joint(axis='z', length=5.0, min_angle_deg=-180, max_angle_deg=180),
-            Joint(axis='y', length=4.0, min_angle_deg=-90, max_angle_deg=90),
-            Joint(axis='y', length=3.0, min_angle_deg=-90, max_angle_deg=90),
-            Joint(axis='x', length=2.0, min_angle_deg=-90, max_angle_deg=90),
+            Joint(axis='z', length=5.0, min_angle=-180, max_angle=180),
+            Joint(axis='y', length=4.0, min_angle=-90, max_angle=90),
+            Joint(axis='y', length=3.0, min_angle=-90, max_angle=90),
+            Joint(axis='x', length=2.0, min_angle=-90, max_angle=90),
         ]
     def set_angles(self, angle_list):
         """Sets angles in degrees, respecting limits."""
@@ -96,6 +96,7 @@ class RobotArm:
         segment_count = len(self.joints)
 
         for iteration in range(max_iterations):
+            
             # Compute positions from current angles
             joint_positions = self._compute_forward_kinematics_from(angles)
 
@@ -111,8 +112,9 @@ class RobotArm:
                 joint_pos = np.array(joint_positions[i])
                 current_end = np.array(joint_positions[-1])
 
-                vec_current = current_end - joint_pos
-                vec_target = target - joint_pos
+                vec_current = (current_end - joint_pos).astype(np.float64)
+                vec_target = (target - joint_pos).astype(np.float64)
+
 
                 norm_current = np.linalg.norm(vec_current)
                 norm_target = np.linalg.norm(vec_target)

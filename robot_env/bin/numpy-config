@@ -1,4 +1,4 @@
-#!/home/tbourgeais/Documents/robot-5-nema-14/robot_env/bin/python3
+#!/home/thibaut/Documents/robot-5-nema-14/robot_env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

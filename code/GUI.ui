@@ -40,70 +40,42 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="labelJ1">
+     <widget class="QLabel" name="labelX">
       <property name="text">
-       <string>Joint 1</string>
+       <string>X</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QDoubleSpinBox" name="spinnerJ1">
+     <widget class="QDoubleSpinBox" name="spinnerX">
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="labelJ2">
+     <widget class="QLabel" name="labelY">
       <property name="text">
-       <string>Joint 2</string>
+       <string>Y</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QDoubleSpinBox" name="spinnerJ2">
+     <widget class="QDoubleSpinBox" name="spinnerY">
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="labelJ3">
+     <widget class="QLabel" name="labelZ">
       <property name="text">
-       <string>Joint 3</string>
+       <string>Z</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QDoubleSpinBox" name="spinnerJ3">
-      <property name="buttonSymbols">
-       <enum>QAbstractSpinBox::PlusMinus</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="labelJ4">
-      <property name="text">
-       <string>Joint 4</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QDoubleSpinBox" name="spinnerJ4">
-      <property name="buttonSymbols">
-       <enum>QAbstractSpinBox::PlusMinus</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="labelJ5">
-      <property name="text">
-       <string>Joint 5</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QDoubleSpinBox" name="spinnerJ5">
+     <widget class="QDoubleSpinBox" name="spinnerZ">
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
       </property>

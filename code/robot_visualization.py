@@ -13,6 +13,8 @@ class RobotWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
         uic.loadUi("code/GUI.ui", self)
+        self.buttonBox.accepted.connect(self.launch_motion_from_xyz)
+        self.setWindowTitle("Robot Arm Simulation - IK Control")
 
         # Create the fig and canvas
         self.figure = Figure()
@@ -24,8 +26,11 @@ class RobotWindow(QtWidgets.QDialog):
         self.robot_plot_layout.addWidget(self.canvas)
         
         self.arm = RobotArm()
+        self.target_point = (7, 2, 5)
+
         self.start_angles = self.arm.get_angles()
-        self.target_angles = self.arm.solve_inverse_kinematic_position((7, 2, 5))
+        self.target_angles = self.arm.solve_inverse_kinematic_position(self.target_point)
+        self.start_angles = self.arm.get_angles()
 
         self.steps_total = 100  # For 5s at 50ms/tick
         self.current_step = 0
@@ -65,9 +70,25 @@ class RobotWindow(QtWidgets.QDialog):
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
         ax.set_zlabel("Z")
+        
+        # Affiche la cible (si elle est définie)
+        if hasattr(self, "target_point"):
+            ax.scatter(*self.target_point, color='blue', s=60, marker='x', label='Target')
 
         self.canvas.draw()
         self.current_step += 1
+        print(f"Step {self.current_step}")
+        
+    def launch_motion_from_xyz(self):
+        x = self.spinnerX.value()
+        y = self.spinnerY.value()
+        z = self.spinnerZ.value()
+
+        self.target_point = (x, y, z)
+        self.start_angles = self.arm.get_angles()
+        self.target_angles = self.arm.solve_inverse_kinematic_position(self.target_point)
+        self.current_step = 0
+
 
 
 if __name__ == "__main__":
