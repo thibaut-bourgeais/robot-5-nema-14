@@ -1,0 +1,25 @@
+[project]
+name = "robot-env"
+version = "0.1.0"
+description = "Every dependency to run the local soft and simulator"
+authors = [
+    {name = "Thibaut Bourgeais",email = "tbourgeais@verity.net"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy (>=2.2.6,<3.0.0)",
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "stable-baselines3 (>=2.6.0,<3.0.0)",
+    "gymnasium (>=1.1.1,<2.0.0)",
+    "tensorboard (>=2.19.0,<3.0.0)",
+]
+
+[tool.poetry.dependencies]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
